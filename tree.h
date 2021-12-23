@@ -36,11 +36,11 @@ int attachnode(node_t *node, node_t* parent)
         parent->numchildren += 1;
         if(parent->numchildren == 1)
         {
-            parent->children = malloc(sizeof(node_t));
+            parent->children = malloc(sizeof(node_t*));
         }
         else if(parent->numchildren > 1)
         {
-            parent->children = realloc(parent->children,sizeof(node_t)*parent->numchildren);
+            parent->children = realloc(parent->children,sizeof(node_t*)*parent->numchildren);
         }
         parent->children[parent->numchildren-1] = node;
     }
@@ -60,10 +60,14 @@ node_t *canode(node_t *parent, char* name)
 }
 
 //basically just free for a node pointer
-void destroynode(node_t* node)//really just resetting it, also call detachnode beforehand
+void destroynode(node_t* node)
 {
     if(node->numchildren > 0)
     {
+        for(int x = 0; x < node->numchildren; x++)
+        {
+            node->children[x]->parent = NULL;
+        }
         free(node->children);
     }
     free(node->name);
@@ -85,7 +89,7 @@ int detachnode(node_t* node)
             node->parent->children[x-1] = node->parent->children[x];
         }
         node->parent->numchildren--;
-        node->parent->children = realloc(node->parent->children,sizeof(node_t)*node->parent->numchildren);
+        node->parent->children = realloc(node->parent->children,sizeof(node_t*)*node->parent->numchildren);
         node->parent = NULL;
     }
     else
