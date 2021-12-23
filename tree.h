@@ -15,6 +15,7 @@ typedef struct node_t{
     struct node_t **children;
 }node_t;
 
+//initializes node pointer with no parent
 node_t* createnode(char* name)
 {
     node_t* node = malloc(sizeof(node_t));
@@ -26,6 +27,7 @@ node_t* createnode(char* name)
     return node;
 }
 
+//adds node to another node's list of children, sets nodes parent
 int attachnode(node_t *node, node_t* parent)
 {
     if(node->parent == NULL)
@@ -48,12 +50,16 @@ int attachnode(node_t *node, node_t* parent)
     }
 }
 
-int canode(node_t **node, node_t **parent, char* name)
+//create and attach node
+node_t *canode(node_t *parent, char* name)
 {
-    *node = createnode(name);
-    return attachnode(*node,*parent);
+    node_t* node;
+    node = createnode(name);
+    attachnode(node,parent);
+    return node;
 }
 
+//basically just free for a node pointer
 void destroynode(node_t* node)//really just resetting it, also call detachnode beforehand
 {
     if(node->numchildren > 0)
@@ -64,6 +70,7 @@ void destroynode(node_t* node)//really just resetting it, also call detachnode b
     free(node);
 }
 
+//removes node from its parent's children list, sets parent to NULL
 int detachnode(node_t* node)
 {
     if(node->parent != NULL)
@@ -87,12 +94,14 @@ int detachnode(node_t* node)
     }
 }
 
+//detach and destroy node
 void ddnode(node_t *node)
 {
     detachnode(node);
     destroynode(node);
 }
 
+//prints name of treebase and all of its children
 void printtree(node_t *treebase)
 {
     if(treebase->numchildren > 0)
@@ -113,6 +122,7 @@ void printtree(node_t *treebase)
     }
 }
 
+//deletes treebase and all of its children
 void destroytree(node_t *treebase)
 {
     int startnumchildren = treebase->numchildren;// copy of numchildren that doesn't get decremented as things are deleted
